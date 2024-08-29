@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
+import 'package:chat_gpt_sdk/chat_gpt_sdk.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:screen_translator/secret.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,10 +18,21 @@ class _HomeScreenState extends State<HomeScreen> {
   final _recievePort = ReceivePort();
   SendPort? homePort;
   final picker = ImagePicker();
+  late OpenAI openAI;
+  String translateTo = "English";
+  String translateFailure = "FAILED TO GET IMAGE";
 
   @override
   void initState() {
     super.initState();
+
+    openAI = OpenAI.instance.build(
+    token: token,
+    baseOption: HttpSetup(
+      receiveTimeout: const Duration(seconds: 20),
+      connectTimeout: const Duration(seconds: 20)),
+    enableLog: true,
+  );
 
     if (homePort != null) {
       return;
@@ -31,14 +45,28 @@ class _HomeScreenState extends State<HomeScreen> {
     _recievePort.listen((message) {
       pickImage(picker).then((xfilepick) {
         if (xfilepick != null) {
-          showDialog(
-            barrierDismissible: true,
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-              title: const Text("Translated Image"),
-              content: Image.file(File(xfilepick.path))
-            ),
-          );
+          print(xfilepick.path);
+          translateImage(File(xfilepick.path)).then((url) {
+            if (url == translateFailure) {
+              showDialog(
+                barrierDismissible: true,
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text("Failed to translate"),
+                  content: const Text("Error: Failed to connect to translation servers. Please try again.")
+                )
+              );
+            } else {
+              showDialog(
+                barrierDismissible: true,
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text("Translation"),
+                  content: Text(url)
+                ),
+              );
+            }
+          });
         } else {
           showDialog(
             barrierDismissible: true,
@@ -108,6 +136,32 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future<String> translateImage(File inpImage) async {
+    String image = base64Encode(inpImage.readAsBytesSync());
+    final request = ChatCompleteText(
+      messages: [
+        {
+          "role": "user",
+          "content": [
+            {"type": "text", "text": "Translate this image to $translateTo"},
+            {
+              "type": "image_url",
+              "image_url": {
+                "url": "data:image/jpg;base64,{$image}"
+              }
+            }
+          ]
+        }
+      ],
+      model: Gpt4oMiniChatModel(),
+    );
+    ChatCTResponse? response = await openAI.onChatCompletion(request: request);
+    if (response == null) {
+      return translateFailure;
+    }
+    return response.choices[0].message!.content;
   }
 }
 
