@@ -1,7 +1,5 @@
-import 'dart:isolate';
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:screen_translator/home_screen.dart';
 
 class TranslateHead extends StatefulWidget {
   
@@ -13,17 +11,21 @@ class _TranslateHeadState extends State<TranslateHead> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: Color.fromRGBO(0, 0, 0, 0),
-      child: OutlinedButton(
-        onPressed: () async {
-          SendPort? homePort;
-          homePort = IsolateNameServer.lookupPortByName("Home");
-          homePort?.send("Hello");
-        },
-        style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.blue
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+          shape: BoxShape.rectangle,
         ),
-        child: Text("Translate"),
+        child: OutlinedButton(
+          style: OutlinedButton.styleFrom(
+            shape: BeveledRectangleBorder(),
+          ),
+          onPressed: () async {
+            chooseFromGallery();
+          },
+          child: Center(child: const Icon(Icons.translate)),
+        ),
       )
     );
   }

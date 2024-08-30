@@ -122,14 +122,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         flag: OverlayFlag.defaultFlag,
                         visibility: NotificationVisibility.visibilityPublic,
                         positionGravity: PositionGravity.auto,
-                        height: 1000,
-                        width: 1000,
+                        height: 125,
+                        width: 200,
                         startPosition: const OverlayPosition(0, -259),
                       );
                     }
                   }
                 },
                 child: const Text("Start"),
+              ),
+              TextButton(
+                onPressed: () async {
+                  chooseFromGallery();
+                },
+                child: const Text("Choose from Gallery"),
               ),
             ],
           ),
@@ -167,4 +173,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
 Future<XFile?> pickImage(ImagePicker picker) async {
   return await picker.pickImage(source: ImageSource.gallery);
+}
+
+void chooseFromGallery() async {
+  SendPort? homePort = IsolateNameServer.lookupPortByName("Home");
+  homePort?.send("Hello");
 }
