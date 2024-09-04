@@ -1,5 +1,7 @@
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:screen_translator/home_screen.dart';
 
 class TranslateHead extends StatefulWidget {
   
@@ -22,7 +24,8 @@ class _TranslateHeadState extends State<TranslateHead> {
             shape: BeveledRectangleBorder(),
           ),
           onPressed: () async {
-            chooseFromGallery();
+            SendPort? homePort = IsolateNameServer.lookupPortByName("Home");
+            homePort?.send("Hello");
           },
           child: Center(child: const Icon(Icons.translate)),
         ),

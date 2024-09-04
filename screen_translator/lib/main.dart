@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:screen_translator/home_screen.dart';
+import 'package:screen_translator/image_translation_pair.dart';
 import 'package:screen_translator/translate_head.dart';
 
 void main() {
@@ -10,6 +12,9 @@ void main() {
 // overlay entry point
 @pragma("vm:entry-point")
 void overlayMain() {
+   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent,
+ ));
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: Material(child: TranslateHead())
@@ -17,10 +22,13 @@ void overlayMain() {
 }
 
 class AppState extends ChangeNotifier {
-  Image? image;
+  final List<ImageTranslationPair> translations = [];
 
-  void addImage(Image image) {
-    this.image = image;
+  void addTranslation(Image image, String translation) {
+    translations.add(ImageTranslationPair(
+      image: image, 
+      translation: translation
+    ));
     notifyListeners();
   }
 }
