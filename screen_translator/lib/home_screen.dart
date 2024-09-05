@@ -23,10 +23,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final _picker = ImagePicker();
   late OpenAI _openAI;
   String _translateTo = "English";
-  String _translateFailure = "TRANSLATION FAILURE";
+  final String _translateFailure = "TRANSLATION FAILURE";
   String _lastTranslation = "Your last translation will be shown here";
   XFile? _lastImage;
   bool _saveImage = false;
+
+  final List<String> _languages = ["English", "French", "Spanish", "German", "Punjabi", "Hindi"];
 
 
   @override
@@ -120,6 +122,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Text("Choose from Gallery"),
                   ),
                   TextButton(
+                    onPressed: () async {
+                      chooseFromCamera();
+                    },
+                    child: const Text("Take a Picture")
+                  ),
+                  TextButton(
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -127,6 +135,24 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                     child: const Text("Saved Translations")
+                  ),
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    child: Column(
+                      children: [
+                        DropdownMenu(
+                          initialSelection: _translateTo,
+                          onSelected: (String? value) {
+                            if (value != null && _languages.contains(value)) {
+                              setState(() { _translateTo = value; });
+                            }
+                          },
+                          dropdownMenuEntries: _languages.map((value) => 
+                            DropdownMenuEntry(value: value, label: value)).toList(),
+                        ),
+                        Text("Choose what language to translate to"),
+                      ],
+                    ),
                   ),
                   Container(
                     margin: const EdgeInsets.all(10),
@@ -164,49 +190,59 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void chooseFromGallery() async {
     pickImage(_picker).then((xfilepick) {
-      if (xfilepick != null) {
-        translateImage(File(xfilepick.path)).then((translation) {
-          if (translation == _translateFailure) {
-            showDialog(
-              barrierDismissible: true,
-              context: context,
-              builder: (BuildContext context) => AlertDialog(
-                title: const Text("Failed to translate"),
-                content: const Text("Error: Failed to connect to translation servers. Please try again.")
-              )
-            );
-          } else {
-            showDialog(
-              barrierDismissible: true,
-              context: context,
-              builder: (BuildContext context) { 
-                return AlertDialog(
-                  title: const Text("Translation"),
-                  content: Text(translation)
-                );
-              }
-            );
-
-            setState(() {
-              _lastTranslation = translation;
-              _lastImage = xfilepick;
-              _saveImage = true;
-            });
-          }
-        });
-      } else {
-        showDialog(
-          barrierDismissible: true,
-          context: context,
-          builder: (BuildContext context) => AlertDialog(
-            title: const Text("Image Error"),
-            content: const Text(
-              "Error: Failed to select image"
-            )
-          ),
-        );
-      }
+      translateProcess(xfilepick);
     });
+  }
+
+  void chooseFromCamera() async {
+    takePhoto(_picker).then((xfilepick) {
+      translateProcess(xfilepick);
+    });
+  }
+
+  void translateProcess(XFile? xfilepick) async {
+    if (xfilepick != null) {
+      translateImage(File(xfilepick.path)).then((translation) {
+        if (translation == _translateFailure) {
+          showDialog(
+            barrierDismissible: true,
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+              title: const Text("Failed to translate"),
+              content: const Text("Error: Failed to connect to translation servers. Please try again.")
+            )
+          );
+        } else {
+          showDialog(
+            barrierDismissible: true,
+            context: context,
+            builder: (BuildContext context) { 
+              return AlertDialog(
+                title: const Text("Translation"),
+                content: Text(translation)
+              );
+            }
+          );
+
+          setState(() {
+            _lastTranslation = translation;
+            _lastImage = xfilepick;
+            _saveImage = true;
+          });
+        }
+      });
+    } else {
+      showDialog(
+        barrierDismissible: true,
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text("Image Error"),
+          content: const Text(
+            "Error: Failed to select image"
+          )
+        ),
+      );
+    }
   }
 
   Future<String> translateImage(File inpImage) async {
@@ -238,4 +274,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
 Future<XFile?> pickImage(ImagePicker picker) async {
   return await picker.pickImage(source: ImageSource.gallery);
+}
+
+Future<XFile?> takePhoto(ImagePicker picker) async {
+  return await picker.pickImage(source: ImageSource.camera);
 }
