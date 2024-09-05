@@ -3,13 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-class TranslateHead extends StatefulWidget {
-  
-  @override
-  State<TranslateHead> createState() => _TranslateHeadState();
-}
-
-class _TranslateHeadState extends State<TranslateHead> {
+class TranslateHead extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -19,11 +13,14 @@ class _TranslateHeadState extends State<TranslateHead> {
           color: Colors.transparent,
           shape: BoxShape.rectangle,
         ),
+        // This button is used to signal that the user wants to translate
         child: OutlinedButton(
           style: OutlinedButton.styleFrom(
             shape: BeveledRectangleBorder(),
           ),
           onPressed: () async {
+            /* Sends a default message to the home server to tell it to choose
+            an image */
             SendPort? homePort = IsolateNameServer.lookupPortByName("Home");
             homePort?.send("Hello");
           },

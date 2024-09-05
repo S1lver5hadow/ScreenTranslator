@@ -9,7 +9,7 @@ void main() {
   runApp(App());
 }
 
-// overlay entry point
+// overlay entry point required for translate_head to work
 @pragma("vm:entry-point")
 void overlayMain() {
    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -22,6 +22,7 @@ void overlayMain() {
 }
 
 class AppState extends ChangeNotifier {
+  // Stores translations the user decides to save
   final List<ImageTranslationPair> translations = [];
 
   void addTranslation(Image image, String translation) {

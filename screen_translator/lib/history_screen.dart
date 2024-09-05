@@ -21,7 +21,11 @@ class HistoryScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Consumer<AppState>(
-                builder: (BuildContext context, AppState state, Widget? child) {  
+                builder: (BuildContext context, AppState state, Widget? child) {
+                  
+                  /* If the user has saved any translations then it returns them
+                  in a list with their corresponding image otherwise return text
+                  stating there are no saved translations */  
                   return (state.translations.isNotEmpty) ? Column(
                     children:  state.translations.reversed.map((pair) => Container(
                       margin: const EdgeInsets.all(10),
