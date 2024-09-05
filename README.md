@@ -1,29 +1,25 @@
-# screen_translator
+# Image Translator
 
-A new Flutter project.
+An android app developed in flutter that is used to translate images to other languages
 
-## Getting Started
+## Options
 
-This project is a starting point for a Flutter application that follows the
-[simple app state management
-tutorial](https://flutter.dev/to/state-management-sample).
+This project has 3 options for translating images:
+<ul>
+  <li>Gallery</li>
+  <li>Camera</li>
+  <li>Overlay</li>
+</ul>
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![An image showcasing the home screen with the different options available](https://github.com/S1lver5hadow/ScreenTranslator/blob/main/Github_Images/Home%20Screen.jpg?raw=true)
 
-## Assets
+## Translation
 
-The `assets` directory houses images, fonts, and any other files you want to
-include with your application.
+The translation is returned in plain text alongside a copy of the original image
+![An image showcasing an example of translation](https://github.com/S1lver5hadow/ScreenTranslator/blob/main/Github_Images/Translated%20Image.jpg?raw=true)
 
-The `assets/images` directory contains [resolution-aware
-images](https://flutter.dev/to/resolution-aware-images).
+## Overlay
 
-## Localization
-
-This project generates localized messages based on arb files found in
-the `lib/src/localization` directory.
-
-To support additional languages, please visit the tutorial on
-[Internationalizing Flutter apps](https://flutter.dev/to/internationalization).
+<em><strong>The overlay requires the permission to draw over other apps.</strong></em><br>
+By enabling the overlay it allows quick and easy access to the translation app by simply tapping on the widget at any time for fast and easy translations
+![An image showcasing an example of the overlay on the screen](https://github.com/S1lver5hadow/ScreenTranslator/blob/main/Github_Images/Overlay.jpg?raw=true)
